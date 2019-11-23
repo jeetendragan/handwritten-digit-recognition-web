@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  <title>Deployment Tutorial 1</title>
+  <script src="fabric.js"></script>
+  <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Arimo' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Hind:300' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<style>
+canvas{border:solid #000 1px;}
+</style>
+</head>
+
+<body>
+ <div class="login">
+    <h2>Handwritten digit recognition</h2>
+    
+    <canvas id="c" width="280" height="280"></canvas>
+    <br>
+    <button onclick="ok();">ok</button>
+    <button onclick="recog()"> Recognize </button>
+   <br> 
+   <br>
+   {{ prediction_text }}
+
+ </div>
+
+
+</body>
+
+<script>
+
+function download(url,name){
+  
+}
+function downloadFabric(canvas,name){
+    //convert the canvas to a data url and download it.
+    url = canvas.toDataURL();
+    console.log(url)
+}
+
+function recog(){
+    downloadFabric(canvas,'image');
+}
+
+var i = 0;
+var path = [];
+var ctx = null;
+
+function ok(){
+  var objs = canvas.toJSON().objects;
+  
+  path = [];
+  for(var j = 0; j < objs.length; j++)
+  {
+      path.push.apply(path,objs[j].path);
+  }
+  
+  i = 0;
+  canvas.clear();
+  ctx = canvas.getContext("2d");
+  ctx.beginPath();
+        
+  draw();
+}
+var p = [0,0];
+function draw(){
+  if(i < path.length){
+    switch(path[i][0]){
+      case "M":
+        ctx.moveTo(path[i][1],path[i][2]);
+        break;
+      case "L":
+      case "Q":
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#ddd';
+        ctx.lineTo(path[i][1],path[i][2]);
+        ctx.stroke();
+        
+        break;
+    }    
+    i++;
+    setTimeout(draw,10);
+  }
+}
+
+window.canvas = new fabric.Canvas('c');
+canvas.isDrawingMode = true;
+</script>
+
+</html>
